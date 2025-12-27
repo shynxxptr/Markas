@@ -77,7 +77,7 @@ async function sendControlPanel(channel, ownerId) {
             new ButtonBuilder().setCustomId('lock').setLabel('Lock').setEmoji('🔒').setStyle(ButtonStyle.Secondary),
             new ButtonBuilder().setCustomId('unlock').setLabel('Unlock').setEmoji('🔓').setStyle(ButtonStyle.Secondary),
             new ButtonBuilder().setCustomId('hide').setLabel('Hide').setEmoji('👁️').setStyle(ButtonStyle.Secondary),
-            new ButtonBuilder().setCustomId('unhide').setLabel('Unhide').setEmoji('👁️‍🗨️').setStyle(ButtonStyle.Secondary)
+            new ButtonBuilder().setCustomId('unhide').setLabel('Unhide').setEmoji('🗨️').setStyle(ButtonStyle.Secondary)
         );
 
     const row2 = new ActionRowBuilder()
