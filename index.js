@@ -63,37 +63,32 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
 // Helper to send Control Panel
 async function sendControlPanel(channel, ownerId) {
     const embed = new EmbedBuilder()
-        .setTitle('🎛️ Voice Control Panel')
-        .setDescription(`Selamat datang di ruang suaramu, <@${ownerId}>! Gunakan tombol di bawah untuk mengatur privasi dan akses.`)
-        .setColor(0x5865F2)
-        .addFields(
-            { name: '👑 Owner', value: `<@${ownerId}>`, inline: true },
-            { name: '🔒 Status', value: 'Unlocked', inline: true },
-            { name: '👥 Limit', value: 'Unlimited', inline: true }
-        );
+        .setTitle('TempVoice Interface')
+        .setDescription(`Interface ini digunakan untuk mengatur room voice sementara kamu.\n\n` +
+            `**Command List:**\n` +
+            `✏️ **Rename**  👥 **Limit**  🔒 **Lock**  🔓 **Unlock**\n` +
+            `👁️ **Hide**  🗨️ **Unhide**  🚫 **Kick**  👑 **Claim**  🗑️ **Disband**`)
+        .setColor(0x2B2D31) // Darker gray like the image
+        .setFooter({ text: 'Tekan tombol di bawah untuk menggunakan interface' });
 
     const row1 = new ActionRowBuilder()
         .addComponents(
-            new ButtonBuilder().setCustomId('lock').setLabel('Lock').setEmoji('🔒').setStyle(ButtonStyle.Secondary),
-            new ButtonBuilder().setCustomId('unlock').setLabel('Unlock').setEmoji('🔓').setStyle(ButtonStyle.Secondary),
-            new ButtonBuilder().setCustomId('hide').setLabel('Hide').setEmoji('👁️').setStyle(ButtonStyle.Secondary),
-            new ButtonBuilder().setCustomId('unhide').setLabel('Unhide').setEmoji('🗨️').setStyle(ButtonStyle.Secondary)
+            new ButtonBuilder().setCustomId('rename').setEmoji('✏️').setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder().setCustomId('limit').setEmoji('👥').setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder().setCustomId('lock').setEmoji('🔒').setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder().setCustomId('unlock').setEmoji('🔓').setStyle(ButtonStyle.Secondary)
         );
 
     const row2 = new ActionRowBuilder()
         .addComponents(
-            new ButtonBuilder().setCustomId('rename').setLabel('Rename').setEmoji('✏️').setStyle(ButtonStyle.Primary),
-            new ButtonBuilder().setCustomId('limit').setLabel('Limit').setEmoji('👥').setStyle(ButtonStyle.Primary),
-            new ButtonBuilder().setCustomId('kick').setLabel('Kick').setEmoji('🚫').setStyle(ButtonStyle.Danger),
-            new ButtonBuilder().setCustomId('claim').setLabel('Claim').setEmoji('👑').setStyle(ButtonStyle.Success)
+            new ButtonBuilder().setCustomId('hide').setEmoji('👁️').setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder().setCustomId('unhide').setEmoji('🗨️').setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder().setCustomId('kick').setEmoji('🚫').setStyle(ButtonStyle.Danger),
+            new ButtonBuilder().setCustomId('claim').setEmoji('👑').setStyle(ButtonStyle.Success),
+            new ButtonBuilder().setCustomId('disband').setEmoji('🗑️').setStyle(ButtonStyle.Danger)
         );
 
-    const row3 = new ActionRowBuilder()
-        .addComponents(
-            new ButtonBuilder().setCustomId('disband').setLabel('Disband').setEmoji('🗑️').setStyle(ButtonStyle.Danger)
-        );
-
-    await channel.send({ embeds: [embed], components: [row1, row2, row3] });
+    await channel.send({ embeds: [embed], components: [row1, row2] });
 }
 
 // Message Create - Text Commands (!markas, !rename, etc.)
