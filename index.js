@@ -161,16 +161,21 @@ client.on('messageCreate', async (message) => {
 client.on('interactionCreate', async (interaction) => {
     if (!interaction.isButton() && !interaction.isModalSubmit() && !interaction.isUserSelectMenu()) return;
 
-    const { customId, member, guild } = interaction;
-    const voiceChannel = member.voice.channel;
+    const { customId, member, guild, channel } = interaction;
+    // Use the channel where the interaction occurred (the temp voice channel)
+    // instead of the user's current voice channel.
+    const targetChannel = channel;
 
     // Helper to check ownership
     const checkOwner = () => {
-        if (!voiceChannel || !channelOwners.has(voiceChannel.id)) {
-            interaction.reply({ content: 'Kamu tidak berada di channel temp voice yang valid!', ephemeral: true });
+        // Check if the interaction is happening in a managed channel
+        if (!targetChannel || !channelOwners.has(targetChannel.id)) {
+            interaction.reply({ content: 'Interface ini tidak valid atau bot telah di-restart.', ephemeral: true });
             return false;
         }
-        if (channelOwners.get(voiceChannel.id) !== member.id && customId !== 'claim') {
+
+        // Check ownership
+        if (channelOwners.get(targetChannel.id) !== member.id && customId !== 'claim') {
             interaction.reply({ content: 'Hanya pemilik room yang bisa melakukan ini!', ephemeral: true });
             return false;
         }
@@ -182,25 +187,25 @@ client.on('interactionCreate', async (interaction) => {
 
         switch (customId) {
             case 'lock':
-                await voiceChannel.permissionOverwrites.edit(guild.roles.everyone, { Connect: false });
+                await targetChannel.permissionOverwrites.edit(guild.roles.everyone, { Connect: false });
                 await interaction.reply({ content: '🔒 Room dikunci.', ephemeral: true });
                 break;
             case 'unlock':
-                await voiceChannel.permissionOverwrites.edit(guild.roles.everyone, { Connect: true });
+                await targetChannel.permissionOverwrites.edit(guild.roles.everyone, { Connect: true });
                 await interaction.reply({ content: '🔓 Room dibuka.', ephemeral: true });
                 break;
             case 'hide':
-                await voiceChannel.permissionOverwrites.edit(guild.roles.everyone, { ViewChannel: false });
+                await targetChannel.permissionOverwrites.edit(guild.roles.everyone, { ViewChannel: false });
                 await interaction.reply({ content: '👁️ Room disembunyikan.', ephemeral: true });
                 break;
             case 'unhide':
-                await voiceChannel.permissionOverwrites.edit(guild.roles.everyone, { ViewChannel: true });
+                await targetChannel.permissionOverwrites.edit(guild.roles.everyone, { ViewChannel: true });
                 await interaction.reply({ content: '👁️‍🗨️ Room ditampilkan.', ephemeral: true });
                 break;
             case 'disband':
                 // Confirmation could be added here, but for now direct action
-                await voiceChannel.delete();
-                channelOwners.delete(voiceChannel.id);
+                await targetChannel.delete();
+                channelOwners.delete(targetChannel.id);
                 // Interaction reply might fail if channel is deleted, so we try-catch or just ignore
                 break;
             case 'rename':
@@ -226,11 +231,11 @@ client.on('interactionCreate', async (interaction) => {
                 await interaction.showModal(limitModal);
                 break;
             case 'claim':
-                const currentOwner = channelOwners.get(voiceChannel.id);
+                const currentOwner = channelOwners.get(targetChannel.id);
                 // Check if current owner is still in the channel
-                const ownerMember = voiceChannel.members.get(currentOwner);
+                const ownerMember = targetChannel.members.get(currentOwner);
                 if (!ownerMember) {
-                    channelOwners.set(voiceChannel.id, member.id);
+                    channelOwners.set(targetChannel.id, member.id);
                     await interaction.reply({ content: '👑 Room berhasil diambil alih!', ephemeral: true });
                 } else {
                     await interaction.reply({ content: 'Pemilik room masih ada di sini!', ephemeral: true });
@@ -256,14 +261,14 @@ client.on('interactionCreate', async (interaction) => {
 
         if (customId === 'renameModal') {
             const newName = interaction.fields.getTextInputValue('newName');
-            await voiceChannel.setName(newName);
+            await targetChannel.setName(newName);
             await interaction.reply({ content: `Nama room diganti menjadi: ${newName}`, ephemeral: true });
         } else if (customId === 'limitModal') {
             const newLimit = parseInt(interaction.fields.getTextInputValue('newLimit'));
             if (isNaN(newLimit) || newLimit < 0 || newLimit > 99) {
                 return interaction.reply({ content: 'Masukkan angka yang valid (0-99).', ephemeral: true });
             }
-            await voiceChannel.setUserLimit(newLimit);
+            await targetChannel.setUserLimit(newLimit);
             await interaction.reply({ content: `Limit room diatur ke: ${newLimit}`, ephemeral: true });
         }
     }
