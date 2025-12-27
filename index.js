@@ -1,4 +1,5 @@
-require('dotenv').config();
+require('dotenv').config({ path: require('path').join(__dirname, '.env') });
+console.log('Token check:', process.env.DISCORD_TOKEN ? 'Loaded (' + process.env.DISCORD_TOKEN.slice(0, 5) + '...)' : 'Not Loaded');
 const { Client, GatewayIntentBits, ChannelType, PermissionFlagsBits, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, InteractionType } = require('discord.js');
 const config = require('./config.json');
 
