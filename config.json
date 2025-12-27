@@ -1,0 +1,6 @@
+{
+    "prefix": "!",
+    "generatorChannelId": "YOUR_GENERATOR_CHANNEL_ID_HERE",
+    "categoryId": "YOUR_CATEGORY_ID_HERE",
+    "ownerRoleId": "OPTIONAL_OWNER_ROLE_ID"
+}
